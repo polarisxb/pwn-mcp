@@ -22,7 +22,14 @@ jobs:
         run: npm install --silent
 
       - name: Build workspaces
-        run: npm run --workspaces --silent build
+        run: |
+          npm run --workspace @pwn-mcp/core build
+          npm run --workspace @pwn-mcp/config build
+          npm run --workspace @pwn-mcp/storage build
+          npm run --workspace @pwn-mcp/orchestrator build
+          npm run --workspace @pwn-mcp/adapters build
+          npm run --workspace @pwn-mcp/templates build
+          npm run --workspace @pwn-mcp/mcp-server build
 
       - name: Run smoke (default)
         run: npm --workspace @pwn-mcp/mcp-server run smoke
@@ -48,7 +55,14 @@ jobs:
         run: npm install --silent
 
       - name: Build workspaces
-        run: npm run --workspaces --silent build
+        run: |
+          npm run --workspace @pwn-mcp/core build
+          npm run --workspace @pwn-mcp/config build
+          npm run --workspace @pwn-mcp/storage build
+          npm run --workspace @pwn-mcp/orchestrator build
+          npm run --workspace @pwn-mcp/adapters build
+          npm run --workspace @pwn-mcp/templates build
+          npm run --workspace @pwn-mcp/mcp-server build
 
       - name: Run smoke (auto deep-static)
         env:

@@ -32,7 +32,14 @@ jobs:
       run: npm ci
 
     - name: Build all packages
-      run: npm run --workspaces build
+      run: |
+        npm run --workspace @pwn-mcp/core build
+        npm run --workspace @pwn-mcp/config build
+        npm run --workspace @pwn-mcp/storage build
+        npm run --workspace @pwn-mcp/orchestrator build
+        npm run --workspace @pwn-mcp/adapters build
+        npm run --workspace @pwn-mcp/templates build
+        npm run --workspace @pwn-mcp/mcp-server build
 
     - name: Run tests
       run: npm --workspace @pwn-mcp/mcp-server run smoke
