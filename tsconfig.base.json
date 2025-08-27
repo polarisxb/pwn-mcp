@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": false,
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@pwn-mcp/core": ["packages/core/src"],
+      "@pwn-mcp/orchestrator": ["packages/orchestrator/src"],
+      "@pwn-mcp/adapters": ["packages/adapters/src"],
+      "@pwn-mcp/templates": ["packages/templates/src"],
+      "@pwn-mcp/config": ["packages/config/src"],
+      "@pwn-mcp/storage": ["packages/storage/src"]
+    }
+  }
+} 

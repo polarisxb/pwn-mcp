@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "composite": true
+  },
+  "references": [
+    { "path": "../core" },
+    { "path": "../orchestrator" },
+    { "path": "../adapters" },
+    { "path": "../templates" },
+    { "path": "../config" },
+    { "path": "../storage" }
+  ],
+  "include": ["src"]
+} 

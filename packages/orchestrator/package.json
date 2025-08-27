@@ -1,0 +1,21 @@
+{
+  "name": "@pwn-mcp/orchestrator",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@pwn-mcp/core": "^0.1.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "rimraf": "^6.0.1",
+    "eslint": "^9.9.0"
+  }
+} 

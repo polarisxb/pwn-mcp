@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm install --silent
+
+      - name: Build workspaces
+        run: npm run --workspaces --silent build
+
+      - name: Run smoke (default)
+        run: npm --workspace @pwn-mcp/mcp-server run smoke
+
+  deep-static:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install rizin and gdb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rizin gdb
+
+      - name: Install deps
+        run: npm install --silent
+
+      - name: Build workspaces
+        run: npm run --workspaces --silent build
+
+      - name: Run smoke (auto deep-static)
+        env:
+          SAFE_MCP_GDB_EXEC: 'true'
+        run: npm --workspace @pwn-mcp/mcp-server run smoke 

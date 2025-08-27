@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build all packages
+      run: npm run --workspaces build
+
+    - name: Run tests
+      run: npm --workspace @pwn-mcp/mcp-server run smoke
+
+    - name: Create tarball
+      run: |
+        VERSION="${{ github.event.inputs.version || github.ref_name }}"
+        tar -czf "pwn-mcp-${VERSION}.tar.gz" \
+          --exclude=node_modules \
+          --exclude=.git \
+          --exclude=.sessions \
+          --exclude='*.log' \
+          .
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.event.inputs.version || github.ref_name }}
+        release_name: ${{ github.event.inputs.version || github.ref_name }}
+        body: |
+          ## What's Changed
+          
+          ### Features
+          - Binary analysis with architecture and protection detection
+          - Dynamic execution with crash analysis
+          - AI-driven exploitation strategy generation
+          - Pwntools template generation
+          
+          ### Installation
+          
+          **Docker:**
+          ```bash
+          docker pull ghcr.io/${{ github.repository }}:${{ github.event.inputs.version || github.ref_name }}
+          ```
+          
+          **From source:**
+          ```bash
+          wget https://github.com/${{ github.repository }}/releases/download/${{ github.event.inputs.version || github.ref_name }}/pwn-mcp-${{ github.event.inputs.version || github.ref_name }}.tar.gz
+          tar -xzf pwn-mcp-*.tar.gz
+          cd pwn-mcp
+          npm install
+          npm run --workspaces build
+          ```
+          
+          See [README](https://github.com/${{ github.repository }}/blob/main/README.md) for detailed usage.
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./pwn-mcp-${{ github.event.inputs.version || github.ref_name }}.tar.gz
+        asset_name: pwn-mcp-${{ github.event.inputs.version || github.ref_name }}.tar.gz
+        asset_content_type: application/gzip
