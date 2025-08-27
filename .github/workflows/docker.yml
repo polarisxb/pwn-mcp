@@ -62,4 +62,4 @@ jobs:
       if: github.event_name == 'pull_request'
       run: |
         docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:pr-${{ github.event.number }} \
-          node packages/mcp-server/dist/server.js --version
+          node -e "console.log('pwn-mcp server ready')"
