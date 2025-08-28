@@ -5,21 +5,23 @@ COPY package.json package-lock.json tsconfig.base.json ./
 COPY packages ./packages
 
 RUN npm ci && \
-    npm run --workspace @pwn-mcp/core build && \
-    npm run --workspace @pwn-mcp/config build && \
-    npm run --workspace @pwn-mcp/storage build && \
-    npm run --workspace @pwn-mcp/orchestrator build && \
-    npm run --workspace @pwn-mcp/adapters build && \
-    npm run --workspace @pwn-mcp/templates build && \
-    npm run --workspace @pwn-mcp/mcp-server build
+    npm -w @pwn-mcp/core run build && \
+    npm -w @pwn-mcp/config run build && \
+    npm -w @pwn-mcp/storage run build && \
+    npm -w @pwn-mcp/orchestrator run build && \
+    npm -w @pwn-mcp/adapters run build && \
+    npm -w @pwn-mcp/templates run build && \
+    npm -w @pwn-mcp/mcp-server run build
 
 FROM node:20-slim
 WORKDIR /app
 COPY --from=base /app /app
 
 # Optional tools; comment if not needed
-RUN apt-get update && apt-get install -y --no-install-recommends rizin gdb \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends gdb && \
+  apt-get install -y --no-install-recommends rizin || true && \
+  rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 ENV SAFE_MCP_DEEP_STATIC=false

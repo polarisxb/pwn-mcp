@@ -23,16 +23,16 @@ jobs:
 
       - name: Build workspaces
         run: |
-          npm run --workspace @pwn-mcp/core build
-          npm run --workspace @pwn-mcp/config build
-          npm run --workspace @pwn-mcp/storage build
-          npm run --workspace @pwn-mcp/orchestrator build
-          npm run --workspace @pwn-mcp/adapters build
-          npm run --workspace @pwn-mcp/templates build
-          npm run --workspace @pwn-mcp/mcp-server build
+          npm -w packages/core run build
+          npm -w packages/config run build
+          npm -w packages/storage run build
+          npm -w packages/orchestrator run build
+          npm -w packages/adapters run build
+          npm -w packages/templates run build
+          npm -w packages/mcp-server run build
 
       - name: Run smoke (default)
-        run: npm --workspace @pwn-mcp/mcp-server run smoke
+        run: npm -w packages/mcp-server run smoke
 
   deep-static:
     runs-on: ubuntu-latest
@@ -46,25 +46,26 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install rizin and gdb
+      - name: Install gdb (optional rizin)
         run: |
           sudo apt-get update
-          sudo apt-get install -y rizin gdb
+          sudo apt-get install -y gdb
+          sudo apt-get install -y rizin || echo "rizin not available on this runner; continuing without it"
 
       - name: Install deps
         run: npm ci
 
       - name: Build workspaces
         run: |
-          npm run --workspace @pwn-mcp/core build
-          npm run --workspace @pwn-mcp/config build
-          npm run --workspace @pwn-mcp/storage build
-          npm run --workspace @pwn-mcp/orchestrator build
-          npm run --workspace @pwn-mcp/adapters build
-          npm run --workspace @pwn-mcp/templates build
-          npm run --workspace @pwn-mcp/mcp-server build
+          npm -w packages/core run build
+          npm -w packages/config run build
+          npm -w packages/storage run build
+          npm -w packages/orchestrator run build
+          npm -w packages/adapters run build
+          npm -w packages/templates run build
+          npm -w packages/mcp-server run build
 
       - name: Run smoke (auto deep-static)
         env:
           SAFE_MCP_GDB_EXEC: 'true'
-        run: npm --workspace @pwn-mcp/mcp-server run smoke
+        run: npm -w packages/mcp-server run smoke
