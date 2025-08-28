@@ -21,6 +21,13 @@ jobs:
       - name: Install deps
         run: npm install --silent
 
+      - name: Debug workspace structure
+        run: |
+          pwd
+          ls -la
+          ls -la packages/
+          ls -la packages/core/
+
       - name: Build workspaces
         run: |
           npm run --workspace @pwn-mcp/core build
@@ -53,6 +60,13 @@ jobs:
 
       - name: Install deps
         run: npm install --silent
+
+      - name: Debug workspace structure
+        run: |
+          pwd
+          ls -la
+          ls -la packages/
+          ls -la packages/core/
 
       - name: Build workspaces
         run: |
