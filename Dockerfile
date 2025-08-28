@@ -4,7 +4,14 @@ WORKDIR /app
 COPY package.json tsconfig.base.json ./
 COPY packages ./packages
 
-RUN npm install --silent && npm run --workspaces --silent build
+RUN npm install --silent && \
+    npm run --workspace @pwn-mcp/core build && \
+    npm run --workspace @pwn-mcp/config build && \
+    npm run --workspace @pwn-mcp/storage build && \
+    npm run --workspace @pwn-mcp/orchestrator build && \
+    npm run --workspace @pwn-mcp/adapters build && \
+    npm run --workspace @pwn-mcp/templates build && \
+    npm run --workspace @pwn-mcp/mcp-server build
 
 FROM node:20-slim
 WORKDIR /app
