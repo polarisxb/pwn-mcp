@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json tsconfig.base.json ./
 COPY packages ./packages
 
-RUN npm ci --silent && \
+RUN npm ci && \
     npm run --workspace @pwn-mcp/core build && \
     npm run --workspace @pwn-mcp/config build && \
     npm run --workspace @pwn-mcp/storage build && \
