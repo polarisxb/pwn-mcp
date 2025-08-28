@@ -5,8 +5,12 @@ on:
     branches: [ main, master ]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,57 +19,21 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build packages
+      - name: Build workspaces
         run: |
-          npm --prefix packages/core run build
-          npm --prefix packages/config run build
-          npm --prefix packages/storage run build
-          npm --prefix packages/orchestrator run build
-          npm --prefix packages/adapters run build
-          npm --prefix packages/templates run build
-          npm --prefix packages/mcp-server run build
+          npm -w @pwn-mcp/core run build
+          npm -w @pwn-mcp/config run build
+          npm -w @pwn-mcp/storage run build
+          npm -w @pwn-mcp/orchestrator run build
+          npm -w @pwn-mcp/adapters run build
+          npm -w @pwn-mcp/templates run build
+          npm -w @pwn-mcp/mcp-server run build
 
-      - name: Run smoke (default)
-        run: npm --prefix packages/mcp-server run smoke
-
-  deep-static:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install gdb (optional rizin)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gdb
-          sudo apt-get install -y rizin || echo "rizin not available on this runner; continuing without it"
-
-      - name: Install deps
-        run: npm ci
-
-      - name: Build packages
-        run: |
-          npm --prefix packages/core run build
-          npm --prefix packages/config run build
-          npm --prefix packages/storage run build
-          npm --prefix packages/orchestrator run build
-          npm --prefix packages/adapters run build
-          npm --prefix packages/templates run build
-          npm --prefix packages/mcp-server run build
-
-      - name: Run smoke (auto deep-static)
-        env:
-          SAFE_MCP_GDB_EXEC: 'true'
-        run: npm --prefix packages/mcp-server run smoke
+      - name: Smoke test
+        run: npm -w @pwn-mcp/mcp-server run smoke

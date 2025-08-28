@@ -1,30 +1,33 @@
-FROM node:20-slim AS base
+# syntax=docker/dockerfile:1
+
+FROM node:20-slim AS builder
 
 WORKDIR /app
-COPY package.json package-lock.json tsconfig.base.json ./
+
+# Copy manifests and workspace packages
+COPY package.json package-lock.json ./
 COPY packages ./packages
 
-RUN npm ci && \
-    npm --prefix packages/core run build && \
-    npm --prefix packages/config run build && \
-    npm --prefix packages/storage run build && \
-    npm --prefix packages/orchestrator run build && \
-    npm --prefix packages/adapters run build && \
-    npm --prefix packages/templates run build && \
-    npm --prefix packages/mcp-server run build
+# Install dependencies
+RUN npm ci
 
-FROM node:20-slim
+# Build all workspaces in order
+RUN npm -w @pwn-mcp/core run build \
+ && npm -w @pwn-mcp/config run build \
+ && npm -w @pwn-mcp/storage run build \
+ && npm -w @pwn-mcp/orchestrator run build \
+ && npm -w @pwn-mcp/adapters run build \
+ && npm -w @pwn-mcp/templates run build \
+ && npm -w @pwn-mcp/mcp-server run build
+
+# Prune dev dependencies for production runtime
+RUN npm prune --omit=dev
+
+FROM node:20-slim AS runner
 WORKDIR /app
-COPY --from=base /app /app
-
-# Optional tools; comment if not needed
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends gdb && \
-  apt-get install -y --no-install-recommends rizin || true && \
-  rm -rf /var/lib/apt/lists/*
-
 ENV NODE_ENV=production
-ENV SAFE_MCP_DEEP_STATIC=false
-ENV SAFE_MCP_GDB_EXEC=false
 
-CMD ["node", "packages/mcp-server/dist/server.js"] 
+COPY --from=builder /app /app
+
+EXPOSE 8888
+CMD ["node", "packages/mcp-server/dist/server.js"]

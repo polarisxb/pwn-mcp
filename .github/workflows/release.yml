@@ -16,87 +16,50 @@ permissions:
   packages: write
 
 jobs:
-  release:
+  build-and-release:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Build all packages
-      run: |
-        npm run --workspace @pwn-mcp/core build
-        npm run --workspace @pwn-mcp/config build
-        npm run --workspace @pwn-mcp/storage build
-        npm run --workspace @pwn-mcp/orchestrator build
-        npm run --workspace @pwn-mcp/adapters build
-        npm run --workspace @pwn-mcp/templates build
-        npm run --workspace @pwn-mcp/mcp-server build
+      - name: Build all packages
+        run: |
+          npm -w @pwn-mcp/core run build
+          npm -w @pwn-mcp/config run build
+          npm -w @pwn-mcp/storage run build
+          npm -w @pwn-mcp/orchestrator run build
+          npm -w @pwn-mcp/adapters run build
+          npm -w @pwn-mcp/templates run build
+          npm -w @pwn-mcp/mcp-server run build
 
-    - name: Run tests
-      run: npm --workspace @pwn-mcp/mcp-server run smoke
+      - name: Run smoke
+        run: npm -w @pwn-mcp/mcp-server run smoke
 
-    - name: Create tarball
-      run: |
-        VERSION="${{ github.event.inputs.version || github.ref_name }}"
-        tar -czf "pwn-mcp-${VERSION}.tar.gz" \
-          --exclude=node_modules \
-          --exclude=.git \
-          --exclude=.sessions \
-          --exclude='*.log' \
-          .
+      - name: Create tarball
+        run: |
+          VERSION="${{ inputs.version || github.ref_name }}"
+          tar -czf "pwn-mcp-${VERSION}.tar.gz" \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude='*.log' \
+            .
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.event.inputs.version || github.ref_name }}
-        release_name: ${{ github.event.inputs.version || github.ref_name }}
-        body: |
-          ## What's Changed
-          
-          ### Features
-          - Binary analysis with architecture and protection detection
-          - Dynamic execution with crash analysis
-          - AI-driven exploitation strategy generation
-          - Pwntools template generation
-          
-          ### Installation
-          
-          **Docker:**
-          ```bash
-          docker pull ghcr.io/${{ github.repository }}:${{ github.event.inputs.version || github.ref_name }}
-          ```
-          
-          **From source:**
-          ```bash
-          wget https://github.com/${{ github.repository }}/releases/download/${{ github.event.inputs.version || github.ref_name }}/pwn-mcp-${{ github.event.inputs.version || github.ref_name }}.tar.gz
-          tar -xzf pwn-mcp-*.tar.gz
-          cd pwn-mcp
-          npm install
-          npm run --workspaces build
-          ```
-          
-          See [README](https://github.com/${{ github.repository }}/blob/main/README.md) for detailed usage.
-        draft: false
-        prerelease: false
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./pwn-mcp-${{ github.event.inputs.version || github.ref_name }}.tar.gz
-        asset_name: pwn-mcp-${{ github.event.inputs.version || github.ref_name }}.tar.gz
-        asset_content_type: application/gzip
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version || github.ref_name }}
+          name: ${{ inputs.version || github.ref_name }}
+          files: pwn-mcp-${{ inputs.version || github.ref_name }}.tar.gz
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

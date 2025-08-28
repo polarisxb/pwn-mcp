@@ -1,0 +1,28 @@
+# VCS
+.git
+.github
+
+# Dependencies and builds
+node_modules
+**/node_modules
+**/dist
+**/.turbo
+**/.tsbuildinfo
+
+# Logs and temp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+.tmp
+.sessions
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Docker
+Dockerfile*
+.dockerignore
