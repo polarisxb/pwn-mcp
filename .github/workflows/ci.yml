@@ -19,14 +19,7 @@ jobs:
           cache: 'npm'
 
       - name: Install deps
-        run: npm install --silent
-
-      - name: Debug workspace structure
-        run: |
-          pwd
-          ls -la
-          ls -la packages/
-          ls -la packages/core/
+        run: npm ci --silent
 
       - name: Build workspaces
         run: |
@@ -59,14 +52,7 @@ jobs:
           sudo apt-get install -y rizin gdb
 
       - name: Install deps
-        run: npm install --silent
-
-      - name: Debug workspace structure
-        run: |
-          pwd
-          ls -la
-          ls -la packages/
-          ls -la packages/core/
+        run: npm ci --silent
 
       - name: Build workspaces
         run: |
@@ -81,4 +67,4 @@ jobs:
       - name: Run smoke (auto deep-static)
         env:
           SAFE_MCP_GDB_EXEC: 'true'
-        run: npm --workspace @pwn-mcp/mcp-server run smoke 
+        run: npm --workspace @pwn-mcp/mcp-server run smoke

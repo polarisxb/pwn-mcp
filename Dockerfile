@@ -1,10 +1,10 @@
 FROM node:20-slim AS base
 
 WORKDIR /app
-COPY package.json tsconfig.base.json ./
+COPY package.json package-lock.json tsconfig.base.json ./
 COPY packages ./packages
 
-RUN npm install --silent && \
+RUN npm ci --silent && \
     npm run --workspace @pwn-mcp/core build && \
     npm run --workspace @pwn-mcp/config build && \
     npm run --workspace @pwn-mcp/storage build && \
