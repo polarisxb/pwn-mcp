@@ -21,18 +21,18 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build workspaces
+      - name: Build packages
         run: |
-          npm -w packages/core run build
-          npm -w packages/config run build
-          npm -w packages/storage run build
-          npm -w packages/orchestrator run build
-          npm -w packages/adapters run build
-          npm -w packages/templates run build
-          npm -w packages/mcp-server run build
+          npm --prefix packages/core run build
+          npm --prefix packages/config run build
+          npm --prefix packages/storage run build
+          npm --prefix packages/orchestrator run build
+          npm --prefix packages/adapters run build
+          npm --prefix packages/templates run build
+          npm --prefix packages/mcp-server run build
 
       - name: Run smoke (default)
-        run: npm -w packages/mcp-server run smoke
+        run: npm --prefix packages/mcp-server run smoke
 
   deep-static:
     runs-on: ubuntu-latest
@@ -55,17 +55,17 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Build workspaces
+      - name: Build packages
         run: |
-          npm -w packages/core run build
-          npm -w packages/config run build
-          npm -w packages/storage run build
-          npm -w packages/orchestrator run build
-          npm -w packages/adapters run build
-          npm -w packages/templates run build
-          npm -w packages/mcp-server run build
+          npm --prefix packages/core run build
+          npm --prefix packages/config run build
+          npm --prefix packages/storage run build
+          npm --prefix packages/orchestrator run build
+          npm --prefix packages/adapters run build
+          npm --prefix packages/templates run build
+          npm --prefix packages/mcp-server run build
 
       - name: Run smoke (auto deep-static)
         env:
           SAFE_MCP_GDB_EXEC: 'true'
-        run: npm -w packages/mcp-server run smoke
+        run: npm --prefix packages/mcp-server run smoke

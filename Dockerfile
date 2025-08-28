@@ -5,13 +5,13 @@ COPY package.json package-lock.json tsconfig.base.json ./
 COPY packages ./packages
 
 RUN npm ci && \
-    npm -w @pwn-mcp/core run build && \
-    npm -w @pwn-mcp/config run build && \
-    npm -w @pwn-mcp/storage run build && \
-    npm -w @pwn-mcp/orchestrator run build && \
-    npm -w @pwn-mcp/adapters run build && \
-    npm -w @pwn-mcp/templates run build && \
-    npm -w @pwn-mcp/mcp-server run build
+    npm --prefix packages/core run build && \
+    npm --prefix packages/config run build && \
+    npm --prefix packages/storage run build && \
+    npm --prefix packages/orchestrator run build && \
+    npm --prefix packages/adapters run build && \
+    npm --prefix packages/templates run build && \
+    npm --prefix packages/mcp-server run build
 
 FROM node:20-slim
 WORKDIR /app
